@@ -7,7 +7,7 @@
           alt
         />
       </div>
-      <el-form ref="loginFromRef" v-model="loginForm" :rules="loginRules">
+      <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
           <el-input placeholder="请输入用户名" v-model="loginForm.username" clearable></el-input>
         </el-form-item>
@@ -32,19 +32,21 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
+        username: [{ required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
         ],
-        password: []
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
+        ]
       }
     }
   },
   methods: {
     resetLoginForm () {
-      this.$refs.loginFromRef.resetFields()
+      this.$refs.loginFormRef.resetFields()
     },
     login () {
-      this.$refs.loginFromRef.validate((valid) => {
+      this.$refs.loginFormRef.validate((valid) => {
         console.log(valid)
       })
     }
