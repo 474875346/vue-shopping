@@ -9,14 +9,27 @@
       </div>
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
-          <el-input placeholder="请输入用户名" v-model="loginForm.username" clearable></el-input>
+          <el-input
+            placeholder="请输入用户名"
+            v-model="loginForm.username"
+            clearable
+          ></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input placeholder="请输入密码" v-model="loginForm.password" show-password clearable></el-input>
+          <el-input
+            placeholder="请输入密码"
+            v-model="loginForm.password"
+            show-password
+            clearable
+          ></el-input>
         </el-form-item>
         <el-form-item class="pwd">
-          <el-button type="primary" @click="login('loginFromRef')">登录</el-button>
-          <el-button type="info" @click="resetLoginForm('loginFromRef')">重置</el-button>
+          <el-button type="primary" @click="login('loginFromRef')"
+            >登录</el-button
+          >
+          <el-button type="info" @click="resetLoginForm('loginFromRef')"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -32,10 +45,12 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' },
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
         ],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' },
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
         ]
       }
@@ -46,7 +61,7 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     login () {
-      this.$refs.loginFormRef.validate((valid) => {
+      this.$refs.loginFormRef.validate(valid => {
         console.log(valid)
       })
     }
