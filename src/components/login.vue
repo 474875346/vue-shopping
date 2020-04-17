@@ -9,27 +9,14 @@
       </div>
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
-          <el-input
-            placeholder="请输入用户名"
-            v-model="loginForm.username"
-            clearable
-          ></el-input>
+          <el-input placeholder="请输入用户名" v-model="loginForm.username" clearable></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            placeholder="请输入密码"
-            v-model="loginForm.password"
-            show-password
-            clearable
-          ></el-input>
+          <el-input placeholder="请输入密码" v-model="loginForm.password" show-password clearable></el-input>
         </el-form-item>
-        <el-form-item class="pwd">
-          <el-button type="primary" @click="login('loginFromRef')"
-            >登录</el-button
-          >
-          <el-button type="info" @click="resetLoginForm('loginFromRef')"
-            >重置</el-button
-          >
+        <el-form-item class="btns">
+          <el-button type="primary" @click="login('loginFromRef')">登录</el-button>
+          <el-button type="info" @click="resetLoginForm('loginFromRef')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -61,8 +48,20 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     login () {
-      this.$refs.loginFormRef.validate(valid => {
+      this.$refs.loginFormRef.validate(async valid => {
         console.log(valid)
+        if (valid) {
+          const { data: res } = await this.$http.post('login', this.loginForm)
+          if (res.meta.status !== 200) {
+            this.$message.error(res.meta.msg)
+          } else {
+            window.sessionStorage.setItem('token', res.data.token)
+            this.$message.success(res.meta.msg)
+            this.$router.push('/home')
+          }
+        } else {
+          console.error('请输入相应的校验信息')
+        }
       })
     }
   }
@@ -72,7 +71,7 @@ export default {
 <style lang="less" scoped>
 .login_box {
   height: 100%;
-  background-color: red;
+  background-color: #eeeeee;
 }
 .login_form {
   width: 450px;
