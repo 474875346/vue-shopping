@@ -71,7 +71,8 @@ export default {
 <style lang="less" scoped>
 .login_box {
   height: 100%;
-  background-color: #eeeeee;
+  background-image: url('http://uploads.5068.com/allimg/151027/57-15102G45304-50.jpg');
+  object-fit: fill;
 }
 .login_form {
   width: 450px;
