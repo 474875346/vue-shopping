@@ -11,6 +11,8 @@ axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 
 axios.interceptors.request.use(function (config) {
   showLoading()
+  console.log(config)
+  config.headers.Authorization = window.sessionStorage.getItem('token')
   return config
 }, function (error) {
   return Promise.reject(error)
