@@ -10,21 +10,25 @@
     </el-header>
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="200px">
+      <el-aside :width="asideWidth">
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
         <el-menu
         @select="handleSelect"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
           unique-opened
+          :collapse="isToggle"
+          :collapse-transition="false"
+          :router="true"
         >
-          <el-submenu :index="item.id | idStr" v-for="item in menulist" :key="item.id">
+          <el-submenu :index="item.path" v-for="item in menulist" :key="item.id" >
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>{{item.authName}}</span>
             </template>
             <el-menu-item
-              :index="subitem.id | idStr"
+              :index="subitem.path"
               v-for="subitem in item.children"
               :key="subitem.id"
             >
@@ -37,7 +41,9 @@
         </el-menu>
       </el-aside>
       <!-- 主体区 -->
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -47,7 +53,8 @@ export default {
   data () {
     return {
       menulist: [],
-      iconsObj: {}
+      iconsObj: {},
+      isToggle: false
     }
   },
   created () {
@@ -70,11 +77,19 @@ export default {
     },
     handleSelect (key, keyPath) {
       console.log(key, keyPath)
+    },
+    toggleCollapse () {
+      this.isToggle = !this.isToggle
     }
   },
   filters: {
     idStr (idx) {
       return '' + idx
+    }
+  },
+  computed: {
+    asideWidth () {
+      return this.isToggle ? '64px' : '200px'
     }
   }
 }
@@ -110,5 +125,11 @@ export default {
 }
 .el-main {
   background-color: #eaedf1;
+}
+.toggle-button{
+  background-color: #4a5064;
+  color: #ffffff;
+  widows: 100%;
+  text-align: center;
 }
 </style>
