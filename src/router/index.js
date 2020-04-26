@@ -25,13 +25,13 @@ const routes = [
       {
         path: '/users',
         component: Users,
-        redirect: '/userhome',
+        redirect: '/users/userhome',
         children: [
           {
-            path: '/userhome',
+            path: 'userhome',
             component: UserHome
           }, {
-            path: '/management',
+            path: 'management',
             component: UserManagement
           }
         ]

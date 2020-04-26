@@ -71,13 +71,13 @@ export default {
 <style lang="less" scoped>
 .login_box {
   height: 100%;
-  background-image: url('http://uploads.5068.com/allimg/151027/57-15102G45304-50.jpg');
+  background-image: url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1587899278484&di=5083a8dfd736dc7b9f955f7533cf82e0&imgtype=0&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2Fqk%2Fback_origin_pic%2F00%2F02%2F98%2Fdbce360dd8cabe2cb620d72d3d85ac39.jpg');
   object-fit: fill;
 }
 .login_form {
   width: 450px;
   height: 300px;
-  background-color: #ffffff;
+  background-color: rgba(255,255,255, 0.5);
   border-radius: 4px;
   position: absolute;
   left: 50%;
