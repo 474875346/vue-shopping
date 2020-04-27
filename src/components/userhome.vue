@@ -4,13 +4,20 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div style="margin-top: 15px;">
-            <el-input placeholder="请输入内容" class="input-with-select" v-model="queryInfo.query" @keyup.enter.native="getUsersList" clearable @clear="getUsersList">
+            <el-input
+              placeholder="请输入内容"
+              class="input-with-select"
+              v-model="queryInfo.query"
+              @keyup.enter.native="getUsersList"
+              clearable
+              @clear="getUsersList"
+            >
               <el-button slot="append" icon="el-icon-search" @click="getUsersList"></el-button>
             </el-input>
           </div>
         </el-col>
         <el-col :span="8">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="dialogFormVisible = true">添加用户</el-button>
         </el-col>
       </el-row>
       <el-table :data="tableData" border style="width: 100%">
@@ -21,21 +28,26 @@
         <el-table-column prop="mobile" label="电话" align="center"></el-table-column>
         <el-table-column prop="mg_state" label="状态" align="center">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949" @change="swithChange(scope.row)"></el-switch>
+            <el-switch
+              v-model="scope.row.mg_state"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              @change="swithChange(scope.row)"
+            ></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
-          <!-- <template slot-scope="scope"> -->
-          <el-tooltip :enterable="false" content="修改" placement="top">
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-          </el-tooltip>
-          <el-tooltip :enterable="false" content="删除" placement="top">
-            <el-button type="danger" icon="el-icon-delete" circle></el-button>
-          </el-tooltip>
-          <el-tooltip :enterable="false" content="分配权限" placement="top">
-            <el-button type="warning" icon="el-icon-setting" circle></el-button>
-          </el-tooltip>
-          <!-- </template> -->
+          <template slot-scope="scope">
+            <el-tooltip :enterable="false" content="修改" placement="top">
+              <el-button type="primary" icon="el-icon-edit" circle @click="editUser(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip :enterable="false" content="删除" placement="top">
+              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+            </el-tooltip>
+            <el-tooltip :enterable="false" content="分配权限" placement="top">
+              <el-button type="warning" icon="el-icon-setting" circle></el-button>
+            </el-tooltip>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -48,6 +60,47 @@
         :total="total"
       ></el-pagination>
     </el-card>
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible" @close="dialogClose">
+      <el-form :model="addfrom" :rules="addfromrules" ref="addForm">
+        <el-form-item label="用户名" prop="username" label-width="80px">
+          <el-input v-model="addfrom.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password" label-width="80px">
+          <el-input v-model="addfrom.password" type="password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email" label-width="80px">
+          <el-input v-model="addfrom.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone" label-width="80px">
+          <el-input v-model="addfrom.phone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="修改用户" :visible.sync="dialogFormEdit" @close="dialogClose">
+      <el-form :model="addfrom" :rules="addfromrules" ref="addForm">
+        <el-form-item label="用户名" prop="username" label-width="80px">
+          <el-input v-model="addfrom.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password" label-width="80px">
+          <el-input v-model="addfrom.password" type="password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email" label-width="80px">
+          <el-input v-model="addfrom.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone" label-width="80px">
+          <el-input v-model="addfrom.phone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editQueryUser">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -62,7 +115,27 @@ export default {
         pagesize: 10
       },
       tableData: [],
-      total: 0
+      total: 0,
+      dialogFormVisible: false,
+      dialogFormEdit: false,
+      addfrom: {
+        username: '',
+        password: '',
+        email: '',
+        phone: ''
+      },
+      addfromrules: {
+        username: [
+          { required: true, message: '请输入活动名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+        ],
+        email: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
+        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
+      }
     }
   },
   created () {
@@ -92,14 +165,40 @@ export default {
       this.queryInfo.pagenum = val
       this.getUsersList()
     },
-    async swithChange (userInfo) { // switch状态改变,用户状态修改
-      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+    async swithChange (userInfo) {
+      // switch状态改变,用户状态修改
+      const { data: res } = await this.$http.put(
+        `users/${userInfo.id}/state/${userInfo.mg_state}`
+      )
       if (res.meta.status === 200) {
         this.$message.success('用户状态更新成功')
       } else {
         userInfo.mg_state = !userInfo.mg_state
         this.$message.error('用户状态更新失败')
       }
+    },
+    dialogClose () {
+      this.$refs.addForm.resetFields()
+    },
+    addUser () {
+      this.$refs.addForm.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('users', this.addfrom)
+        console.log(res)
+        if (res.meta.status === 201) {
+          this.$message.success('添加用户成功')
+          this.dialogFormVisible = false
+          this.getUsersList()
+        } else {
+          this.$message.error(res.meta.msg)
+        }
+      })
+    },
+    editUser () {
+      this.dialogFormEdit = true
+    },
+    editQueryUser () {
+
     }
   }
 }
