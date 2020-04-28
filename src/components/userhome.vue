@@ -71,8 +71,8 @@
         <el-form-item label="邮箱" prop="email" label-width="80px">
           <el-input v-model="addfrom.email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="手机" prop="phone" label-width="80px">
-          <el-input v-model="addfrom.phone" autocomplete="off"></el-input>
+        <el-form-item label="手机" prop="mobile" label-width="80px">
+          <el-input v-model="addfrom.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -81,23 +81,17 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="修改用户" :visible.sync="dialogFormEdit" @close="dialogClose">
-      <el-form :model="addfrom" :rules="addfromrules" ref="addForm">
-        <el-form-item label="用户名" prop="username" label-width="80px">
-          <el-input v-model="addfrom.username" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password" label-width="80px">
-          <el-input v-model="addfrom.password" type="password" autocomplete="off"></el-input>
-        </el-form-item>
+    <el-dialog title="修改用户" :visible.sync="dialogFormEdit">
+      <el-form :model="editfrom" :rules="editfromrules" ref="editForm">
         <el-form-item label="邮箱" prop="email" label-width="80px">
-          <el-input v-model="addfrom.email" autocomplete="off"></el-input>
+          <el-input v-model="editfrom.email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="手机" prop="phone" label-width="80px">
-          <el-input v-model="addfrom.phone" autocomplete="off"></el-input>
+        <el-form-item label="手机" prop="mobile" label-width="80px">
+          <el-input v-model="editfrom.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormEdit = false">取 消</el-button>
         <el-button type="primary" @click="editQueryUser">确 定</el-button>
       </div>
     </el-dialog>
@@ -122,7 +116,7 @@ export default {
         username: '',
         password: '',
         email: '',
-        phone: ''
+        mobile: ''
       },
       addfromrules: {
         username: [
@@ -134,7 +128,16 @@ export default {
           { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
         ],
         email: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
+        mobile: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
+      },
+      editfrom: {
+        email: '',
+        mobile: '',
+        id: ''
+      },
+      editfromrules: {
+        email: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
+        mobile: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
       }
     }
   },
@@ -194,11 +197,26 @@ export default {
         }
       })
     },
-    editUser () {
+    editUser (user) {
+      console.log(user)
       this.dialogFormEdit = true
+      this.editfrom.email = user.email
+      this.editfrom.mobile = user.mobile
+      this.editfrom.id = user.id
     },
     editQueryUser () {
-
+      this.$refs.editForm.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(`users/${this.editfrom.id}`, this.editfrom)
+        console.log(res)
+        if (res.meta.status === 200) {
+          this.$message.success('更新用户成功')
+          this.dialogFormEdit = false
+          this.getUsersList()
+        } else {
+          this.$message.error(res.meta.msg)
+        }
+      })
     }
   }
 }
