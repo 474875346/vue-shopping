@@ -42,7 +42,7 @@
               <el-button type="primary" icon="el-icon-edit" circle @click="editUser(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip :enterable="false" content="删除" placement="top">
-              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle @click="deleteUser(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip :enterable="false" content="分配权限" placement="top">
               <el-button type="warning" icon="el-icon-setting" circle></el-button>
@@ -81,7 +81,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="修改用户" :visible.sync="dialogFormEdit">
+    <el-dialog title="修改用户" :visible.sync="dialogFormEdit" @close="dialogeditClose">
       <el-form :model="editfrom" :rules="editfromrules" ref="editForm">
         <el-form-item label="邮箱" prop="email" label-width="80px">
           <el-input v-model="editfrom.email" autocomplete="off"></el-input>
@@ -145,7 +145,7 @@ export default {
     this.getUsersList()
   },
   methods: {
-    async getUsersList () {
+    async getUsersList () { // 获取列表
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo
       })
@@ -158,12 +158,12 @@ export default {
         this.$message.error(res.meta.msg)
       }
     },
-    handleSizeChange (val) {
+    handleSizeChange (val) { // 分页每页个数
       console.log(`每页 ${val} 条`)
       this.queryInfo.pagesize = val
       this.getUsersList()
     },
-    handleCurrentChange (val) {
+    handleCurrentChange (val) { // 分页当前页
       console.log(`当前页: ${val}`)
       this.queryInfo.pagenum = val
       this.getUsersList()
@@ -180,10 +180,13 @@ export default {
         this.$message.error('用户状态更新失败')
       }
     },
-    dialogClose () {
+    dialogClose () { // 添加用户关闭
       this.$refs.addForm.resetFields()
     },
-    addUser () {
+    dialogeditClose () { // 修改用户关闭
+      this.$refs.editForm.resetFields()
+    },
+    addUser () { // 添加
       this.$refs.addForm.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post('users', this.addfrom)
@@ -197,14 +200,14 @@ export default {
         }
       })
     },
-    editUser (user) {
+    editUser (user) { // 修改弹窗弹出
       console.log(user)
       this.dialogFormEdit = true
       this.editfrom.email = user.email
       this.editfrom.mobile = user.mobile
       this.editfrom.id = user.id
     },
-    editQueryUser () {
+    editQueryUser () { // 修改
       this.$refs.editForm.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.put(`users/${this.editfrom.id}`, this.editfrom)
@@ -217,6 +220,25 @@ export default {
           this.$message.error(res.meta.msg)
         }
       })
+    },
+    async deleteUser (user) { // 删除用户
+      const res = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(error => error)
+      console.log(res)
+      if (res === 'confirm') {
+        const { data } = await this.$http.delete(`users/${user.id}`)
+        console.log(data)
+        if (data.meta.status === 200) {
+          this.$message.success('删除成功')
+          this.queryInfo.pagenum = 1
+          this.getUsersList()
+        } else {
+          this.$message.error(data.meta.msg)
+        }
+      }
     }
   }
 }
